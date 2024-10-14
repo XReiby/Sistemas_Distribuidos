@@ -1,0 +1,52 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:80"  # Para Laravel
+      - "8080:8080"  # Para el servidor de sockets
+    networks:
+      - laravel-network
+
+  node1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: php -S 0.0.0.0:8001 -t /var/www # Un servidor PHP simple para mantener el contenedor activo
+    networks:
+      - laravel-network
+
+  node2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: php -S 0.0.0.0:8002 -t /var/www
+    networks:
+      - laravel-network
+
+  node3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: php -S 0.0.0.0:8003 -t /var/www
+    networks:
+      - laravel-network
+
+  node4:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: php -S 0.0.0.0:8004 -t /var/www
+    networks:
+      - laravel-network
+
+  node5:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: php -S 0.0.0.0:8005 -t /var/www
+    networks:
+      - laravel-network
+
+networks:
+  laravel-network:
+    driver: bridge
