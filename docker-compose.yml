@@ -2,7 +2,7 @@ services:
   app:
     build: .
     ports:
-      - "8000:80"  # Para Laravel
+      - "8000:80"  # El puerto 80 del contenedor se expone en el puerto 8000 del host
       - "8080:8080"  # Para el servidor de sockets
     networks:
       - laravel-network
@@ -11,7 +11,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: php -S 0.0.0.0:8001 -t /var/www # Un servidor PHP simple para mantener el contenedor activo
+    command: php -S 0.0.0.0:8001 -t /var/www/html/public # Asegúrate de que apunta al directorio público
     networks:
       - laravel-network
 
@@ -19,7 +19,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: php -S 0.0.0.0:8002 -t /var/www
+    command: php -S 0.0.0.0:8002 -t /var/www/html/public
     networks:
       - laravel-network
 
@@ -27,7 +27,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: php -S 0.0.0.0:8003 -t /var/www
+    command: php -S 0.0.0.0:8003 -t /var/www/html/public
     networks:
       - laravel-network
 
@@ -35,7 +35,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: php -S 0.0.0.0:8004 -t /var/www
+    command: php -S 0.0.0.0:8004 -t /var/www/html/public
     networks:
       - laravel-network
 
@@ -43,7 +43,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: php -S 0.0.0.0:8005 -t /var/www
+    command: php -S 0.0.0.0:8005 -t /var/www/html/public
     networks:
       - laravel-network
 

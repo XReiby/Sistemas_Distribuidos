@@ -19,25 +19,5 @@
     <footer>
         <p>&copy; 2024 Mi Aplicación</p>
     </footer>
-    <script>
-        // Función para obtener mensajes
-        function fetchMessages() {
-            fetch('/api/messages')
-                .then(response => response.json())
-                .then(data => {
-                    const messageList = document.getElementById('message-list');
-                    messageList.innerHTML = ''; // Limpiar la lista antes de agregar nuevos mensajes
-                    data.forEach(message => {
-                        const li = document.createElement('li');
-                        li.textContent = message;
-                        messageList.appendChild(li);
-                    });
-                })
-                .catch(error => console.error('Error fetching messages:', error));
-        }
-
-        // Llamar a fetchMessages cada 2 segundos
-        setInterval(fetchMessages, 2000);
-    </script>
 </body>
 </html>
