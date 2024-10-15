@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MessageController;
 
-// Ruta para la vista principal (opcional)
+// Ruta para la vista principal
 Route::get('/', function () {
     return view('index'); // Devuelve la vista 'index.blade.php'
 });
