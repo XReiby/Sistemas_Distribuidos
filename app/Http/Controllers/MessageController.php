@@ -3,59 +3,80 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\File;
 
 class MessageController extends Controller
 {
-    protected $filePath = '/var/www/html/storage/messages.txt'; // Ruta al archivo .txt
+    protected $currentLeader = 'node1'; // Nodo líder inicial
+    protected $logFile; // Ruta del archivo de log
 
-    // Método para obtener los mensajes
-    public function index()
+    public function __construct()
     {
-        $messages = []; // Inicializa el array de mensajes
-
-        // Verifica si el archivo existe y es un archivo regular
-        if (File::exists($this->filePath) && File::isFile($this->filePath)) {
-            // Lee el contenido del archivo
-            $content = File::get($this->filePath);
-            // Divide el contenido en líneas y las guarda en el array
-            $messages = array_filter(explode(PHP_EOL, trim($content))); // Usa array_filter para eliminar líneas vacías
-        }
-
-        return response()->json($messages); // Retorna los mensajes como JSON
+        $this->logFile = storage_path('logs/mensajes.log'); // Define la ruta del archivo de log
     }
 
-    // Método para almacenar un nuevo mensaje
-    public function store(Request $request)
-    {
-        Log::info('Received request to store message: ', $request->all());
+    // Actualiza el líder actual
+    public function updateLeader(Request $request) {
+        $this->currentLeader = $request->input('current_leader');
+        // Registrar en los logs
+        $logMessage = "[System] Leader updated to: {$this->currentLeader}\n";
+        File::append($this->logFile, $logMessage);
+        return response()->json(['status' => 'Líder actualizado', 'current_leader' => $this->currentLeader]);
+    }
 
-        try {
-            // Validar que el mensaje esté presente
-            $request->validate([
-                'message' => 'required|string|max:255',
-            ]);
+    // Obtiene el líder actual
+    public function getCurrentLeader() {
+        return response()->json(['current_leader' => $this->currentLeader]);
+    }
 
-            $message = $request->input('message');
+    // Obtiene todos los mensajes
+    public function getMessages() {
+        return response()->json($this->readMessagesFromLog());
+    }
 
-            // Crear el archivo si no existe
-            if (!File::exists($this->filePath)) {
-                File::put($this->filePath, ""); // Crea el archivo si no existe
+    // Almacena un nuevo mensaje
+    public function storeMessage(Request $request) {
+        $request->validate([
+            'sender_node' => 'required|string|max:255',
+            'type' => 'required|string|max:50',
+            'message' => 'required|string|max:255',
+        ]);
+
+        $message = [
+            'sender_node' => $request->input('sender_node'),
+            'type' => $request->input('type'),
+            'message' => $request->input('message'),
+            'timestamp' => now()->toISOString() // Agregar una marca de tiempo
+        ];
+
+        // Loguea el mensaje en el archivo
+        $logMessage = "[{$message['timestamp']}] [{$message['sender_node']}] ({$message['type']}): {$message['message']}\n";
+        File::append($this->logFile, $logMessage);
+
+        return response()->json(['status' => 'Mensaje almacenado', 'message' => $message]);
+    }
+
+    // Lee los mensajes desde el archivo de log
+    protected function readMessagesFromLog() {
+        if (File::exists($this->logFile)) {
+            $lines = File::lines($this->logFile);
+            $messages = [];
+
+            foreach ($lines as $line) {
+                // Parsear el mensaje desde el formato de log
+                if (preg_match('/\[(.*?)\] \[(.*?)\] \((.*?)\): (.*)/', $line, $matches)) {
+                    $messages[] = [
+                        'timestamp' => $matches[1],
+                        'sender_node' => $matches[2],
+                        'type' => $matches[3],
+                        'message' => $matches[4],
+                    ];
+                }
             }
 
-            // Agrega el nuevo mensaje al archivo
-            File::append($this->filePath, $message . PHP_EOL); // Almacena el mensaje
-
-            Log::info('Message stored successfully.');
-
-            // Lee nuevamente todos los mensajes para devolverlos
-            $messages = $this->index()->getOriginalContent();
-
-            return response()->json(['success' => true, 'messages' => $messages]);
-        } catch (\Exception $e) {
-            Log::error('Error storing message: ' . $e->getMessage());
-            return response()->json(['success' => false, 'error' => $e->getMessage()], 400);
+            return $messages;
         }
+
+        return [];
     }
 }

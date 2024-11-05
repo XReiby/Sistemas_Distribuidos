@@ -11,7 +11,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: php -S 0.0.0.0:8001 -t /var/www/html/public # Asegúrate de que apunta al directorio público
+    command: php /var/www/html/nodo1.php # Llama al archivo nodo1.php
     networks:
       - laravel-network
 
@@ -19,7 +19,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: php -S 0.0.0.0:8002 -t /var/www/html/public
+    command: php /var/www/html/nodo2.php # Llama al archivo nodo2.php
     networks:
       - laravel-network
 
@@ -27,7 +27,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: php -S 0.0.0.0:8003 -t /var/www/html/public
+    command: php /var/www/html/nodo3.php # Llama al archivo nodo3.php
     networks:
       - laravel-network
 
@@ -35,7 +35,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: php -S 0.0.0.0:8004 -t /var/www/html/public
+    command: php /var/www/html/nodo4.php # Llama al archivo nodo4.php
     networks:
       - laravel-network
 
@@ -43,7 +43,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: php -S 0.0.0.0:8005 -t /var/www/html/public
+    command: php /var/www/html/nodo5.php # Llama al archivo nodo5.php
     networks:
       - laravel-network
 

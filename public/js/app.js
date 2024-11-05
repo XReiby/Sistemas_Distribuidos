@@ -1,35 +1,28 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Llama a fetchMessages cada 2 segundos
+    fetchCurrentLeader();
     setInterval(fetchMessages, 2000);
+    setInterval(fetchCurrentLeader, 5000);
 
-    // Función para obtener los mensajes
     function fetchMessages() {
         fetch('/api/messages')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error en la red');
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
-                console.log('Data received from API:', data); // Para verificar los datos
-
-                // Aquí actualizamos la lista de mensajes en la página
                 const messageList = document.getElementById('message-list');
-                messageList.innerHTML = ''; // Limpia la lista antes de agregar nuevos mensajes
+                messageList.innerHTML = '';
 
-                if (Array.isArray(data)) {  // Verifica que data sea un arreglo
-                    data.forEach(message => {
-                        const li = document.createElement('li');
-                        li.textContent = message;
-                        messageList.appendChild(li);
-                    });
-                } else {
-                    console.error('La respuesta de la API no es un arreglo:', data);
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching messages:', error);
+                data.forEach(message => {
+                    const li = document.createElement('li');
+                    li.textContent = `[${message.sender_node}] (${message.type}): ${message.message}`;
+                    messageList.appendChild(li);
+                });
+            });
+    }
+
+    function fetchCurrentLeader() {
+        fetch('/api/current-leader')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('current-leader').textContent = data.current_leader;
             });
     }
 });

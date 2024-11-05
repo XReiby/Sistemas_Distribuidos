@@ -37,5 +37,13 @@ RUN echo '<Directory /var/www/html/public>\n\
     DocumentRoot /var/www/html/public\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
+RUN chown -R www-data:www-data /var/www/html && \
+    chmod -R 775 /var/www/html && \
+    chmod -R ug+rwx /var/www/html/storage
+    
+RUN chown -R www-data:www-data /var/www/html/storage
+RUN chmod -R 775 /var/www/html/storage
+    
+
 # Establece el comando por defecto para ejecutar Apache
 CMD ["apache2-foreground"]
